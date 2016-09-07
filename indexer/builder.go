@@ -6,14 +6,33 @@ import (
 	"github.com/google/go-github/github"
 )
 
-func BuildRepositoryObject(ghrepo *github.Repository) (*Repository, error) {
-	marshalledRepo, err := json.Marshal(ghrepo)
+// BuildOrganizationObject builds an organization object ready to be pushed to Coveo
+func BuildOrganizationObject(toBuild *github.Organization) (*Organization, error) {
+	marsh, err := json.Marshal(toBuild)
+	if err != nil {
+		return nil, err
+	}
+
+	toPush := &Organization{}
+	if err := json.Unmarshal(marsh, toPush); err != nil {
+		return nil, err
+	}
+
+	toPush.Data = toPush.Description
+	toPush.FileType = toPush.Type
+
+	return toPush, nil
+}
+
+// BuildRepositoryObject builds a Repository object ready to be pushed to Coveo
+func BuildRepositoryObject(toBuild *github.Repository) (*Repository, error) {
+	marsh, err := json.Marshal(toBuild)
 	if err != nil {
 		return nil, err
 	}
 
 	toPush := &Repository{}
-	if err := json.Unmarshal(marshalledRepo, toPush); err != nil {
+	if err := json.Unmarshal(marsh, toPush); err != nil {
 		return nil, err
 	}
 

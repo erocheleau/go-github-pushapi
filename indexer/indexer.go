@@ -11,16 +11,22 @@ import (
 	"github.com/google/go-github/github"
 )
 
+// ReposIndexer interface to index github objects. @see NewReposIndexer for config
 type ReposIndexer interface {
+	IndexOrganizationByName(orgname string)
 	IndexRepositoriesByOrgAsync(orgname string)
 	pushRepositories([]*github.Repository)
 }
 
+// ReposIndexerOptions options to start the indexer
 type ReposIndexerOptions struct {
 	Debug    bool
 	SourceID string
 }
 
+// NewReposIndexer will create an indexer process to index different github objects
+// it requires a pushConf which is the configuration of a pushapi client @see github.com/coveo/go-coveo/pushapi
+// it can receive an httpClient to handle github authentication, and some opt which are the `SourceID` and a `Debug` flag
 func NewReposIndexer(pushConf pushapi.Config, httpclient *http.Client, opt ReposIndexerOptions) (ReposIndexer, error) {
 
 	if opt.Debug {
@@ -51,6 +57,51 @@ type reposIndexer struct {
 	sourceID   string
 }
 
+///////////////////////////////////////////////
+/////////////// ORGANIZATIONS /////////////////
+///////////////////////////////////////////////
+
+func (r *reposIndexer) IndexOrganizationByName(orgname string) {
+
+	if r.debug {
+		Info.Println("Indexing", orgname)
+	}
+
+	organization, _, err := r.ghclient.Organizations.Get(orgname)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	r.pushOrganization(organization)
+}
+
+func (r *reposIndexer) pushOrganization(org *github.Organization) {
+	toPush, err := BuildOrganizationObject(org)
+	if err != nil {
+		Error.Fatal(err)
+	}
+
+	doc := pushapi.Document{
+		DocumentID: toPush.URL,
+		Fields:     structs.Map(toPush),
+	}
+
+	if _, err = r.pushClient.PushDocument(doc, r.sourceID); err != nil {
+		Error.Fatal(err)
+	}
+
+	if r.debug {
+		Info.Println("Done pushing organization", *org.Name)
+	}
+}
+
+///////////////////////////////////////////////
+/////////////// REPOSITORIES //////////////////
+///////////////////////////////////////////////
+
+// IndexRepositoriesByOrgAsync will index all the repositories from a specific
+// orgname and will index them in a push source
+// @param orgname The name of the organization to index the repositories of.
 func (r *reposIndexer) IndexRepositoriesByOrgAsync(orgname string) {
 
 	opt := &github.RepositoryListByOrgOptions{Type: "public"}

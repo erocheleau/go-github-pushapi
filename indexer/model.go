@@ -1,5 +1,27 @@
 package indexer
 
+type Organization struct {
+	Login            string `json:"login,omitempty"`
+	ID               int    `json:"id,omitempty"`
+	AvatarURL        string `json:"avatar_url,omitempty"`
+	URL              string `json:"html_url,omitempty"`
+	Name             string `json:"name,omitempty"`
+	Company          string `json:"company,omitempty"`
+	Blog             string `json:"blog,omitempty"`
+	Location         string `json:"location,omitempty"`
+	Email            string `json:"email,omitempty"`
+	Description      string `json:"description,omitempty"`
+	PublicReposCount int    `json:"public_repos,omitempty"`
+	PublicGistsCount int    `json:"public_gists,omitempty"`
+	FollowersCount   int    `json:"followers,omitempty"`
+	FollowingCount   int    `json:"following,omitempty"`
+	CreatedAt        string `json:"created_at,omitempty"`
+	UpdatedAt        string `json:"updated_at,omitempty"`
+	Type             string `json:"type,omitempty"`
+	FileType         string `json:"filetype"`
+	Data             string `json:"data"`
+}
+
 type Repository struct {
 	ID             float64 `json:"id"`
 	Name           string  `json:"name"`

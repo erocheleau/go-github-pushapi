@@ -26,9 +26,12 @@ func main() {
 		OrganizationID: organizationID,
 		APIKey:         APIKey,
 	}
+
 	indexer, err := indexer.NewReposIndexer(pushConf, nil, indexerOptions)
 	if err != nil {
 		panic(err)
 	}
+
+	indexer.IndexOrganizationByName("Coveo")
 	indexer.IndexRepositoriesByOrgAsync("Coveo")
 }
