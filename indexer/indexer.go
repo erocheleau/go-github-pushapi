@@ -1,7 +1,6 @@
 package indexer
 
 import (
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -58,7 +57,7 @@ func (r *reposIndexer) IndexRepositoriesByOrgAsync(orgname string) {
 	repos, _, err := r.ghclient.Repositories.ListByOrg(orgname, opt)
 
 	if r.debug {
-		Info.Printf("Indexing %v repositories of %s", len(repos), orgname)
+		Info.Println("Indexing", len(repos), "repositories of", orgname)
 	}
 
 	if err != nil {
@@ -70,14 +69,14 @@ func (r *reposIndexer) IndexRepositoriesByOrgAsync(orgname string) {
 
 func (r *reposIndexer) pushRepositories(repos []*github.Repository) {
 	if r.debug {
-		Info.Printf("Pushing %v repositories", len(repos))
+		Info.Println("Pushing", len(repos), "repositories")
 	}
 	for _, repo := range repos {
 		if r.debug {
-			Info.Printf("Indexing repository %s", *repo.Name)
+			Info.Println("Pushing repository", *repo.Name)
 		}
 
-		toPush, err := buildRepositoryObject(repo)
+		toPush, err := BuildRepositoryObject(repo)
 		if err != nil {
 			Error.Fatal(err)
 		}
@@ -90,32 +89,8 @@ func (r *reposIndexer) pushRepositories(repos []*github.Repository) {
 		if _, err = r.pushClient.PushDocument(doc, r.sourceID); err != nil {
 			Error.Fatal(err)
 		}
-
-		if r.debug {
-			Info.Printf("Pushed repository %v", *repo.Name)
-		}
 	}
 	if r.debug {
-		Info.Printf("Done indexing")
+		Info.Println("Done indexing")
 	}
-}
-
-func buildRepositoryObject(ghrepo *github.Repository) (*Repository, error) {
-	marshalledRepo, err := json.Marshal(ghrepo)
-	if err != nil {
-		return nil, err
-	}
-
-	toPush := &Repository{}
-	if err := json.Unmarshal(marshalledRepo, toPush); err != nil {
-		return nil, err
-	}
-
-	toPush.OwnerID = toPush.Owner.ID
-	toPush.OwnerName = toPush.Owner.Login
-	toPush.OwnerType = toPush.Owner.Type
-	toPush.OwnerAvatarURL = toPush.Owner.AvatarURL
-	toPush.Data = toPush.Description
-
-	return toPush, nil
 }

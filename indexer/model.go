@@ -22,6 +22,7 @@ type Repository struct {
 	OwnerID        float64 `json:"ownerID"`
 	OwnerAvatarURL string  `json:"ownerAvatarURL"`
 	OwnerType      string  `json:"ownerType"`
+	FileType       string  `json:"filetype"`
 }
 
 type Owner struct {
