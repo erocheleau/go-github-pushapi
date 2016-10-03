@@ -14,7 +14,7 @@ import (
 // ReposIndexer interface to index github objects. @see NewReposIndexer for config
 type ReposIndexer interface {
 	IndexOrganizationByName(orgname string)
-	IndexRepositoryByName(owner, name string)
+	IndexRepositoryByNameAsync(owner, name string)
 	IndexRepositoriesByOrgAsync(orgname string)
 	pushRepositories([]*github.Repository)
 }
@@ -102,7 +102,7 @@ func (r *reposIndexer) pushOrganization(org *github.Organization) {
 
 // IndexRepositoryByNameAsync will index a single repository from a owner.
 func (r *reposIndexer) IndexRepositoryByNameAsync(owner, name string) {
-	repos := []*github.Repository{}
+	repos := make([]*github.Repository, 1)
 	repo, _, err := r.ghclient.Repositories.Get(owner, name)
 	if err != nil {
 		fmt.Println(err)

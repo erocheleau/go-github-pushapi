@@ -32,8 +32,8 @@ func main() {
 		panic(err)
 	}
 
-	indexer.IndexOrganizationByName("Coveo")
-	indexer.IndexRepositoriesByOrgAsync("Coveo")
+	// indexer.IndexOrganizationByName("Coveo")
+	// indexer.IndexRepositoriesByOrgAsync("Coveo")
 
-	indexer.IndexRepositoryByName("erocheleau", "temperature-control-api")
+	indexer.IndexRepositoryByNameAsync("erocheleau", "temperature-control-api")
 }
