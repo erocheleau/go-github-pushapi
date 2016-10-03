@@ -16,7 +16,7 @@ type ReposIndexer interface {
 	IndexOrganizationByName(orgname string)
 	IndexRepositoryByNameAsync(owner, name string)
 	IndexRepositoriesByOrgAsync(orgname string)
-	pushRepositories([]*github.Repository)
+	IndexPullRequestsByRepo(owner, reponame string, opts *github.PullRequestListOptions)
 }
 
 // ReposIndexerOptions options to start the indexer
@@ -161,5 +161,55 @@ func (r *reposIndexer) pushRepositories(repos []*github.Repository) {
 	}
 	if r.debug {
 		Info.Println("Done indexing")
+	}
+}
+
+///////////////////////////////////////////////
+/////////////// PULL REQUEST //////////////////
+///////////////////////////////////////////////
+
+func (r *reposIndexer) IndexPullRequestsByRepo(owner, reponame string, opts *github.PullRequestListOptions) {
+	if r.debug {
+		Info.Println("Indexing PR for repo : ", owner, "/", reponame)
+	}
+
+	prs, _, err := r.ghclient.PullRequests.List(owner, reponame, opts)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+	if len(prs) > 0 {
+		r.pushPullRequests(prs)
+	}
+}
+
+func (r *reposIndexer) pushPullRequests(prs []*github.PullRequest) {
+	if r.debug {
+		Info.Println("Pushing", len(prs), "pull requests")
+	}
+
+	for _, pr := range prs {
+		if r.debug {
+			Info.Println("Pushing PR >>> ", *pr.Title)
+		}
+
+		toPush, err := BuildPRObject(pr)
+		if err != nil {
+			Error.Fatal(err)
+		}
+
+		doc := pushapi.Document{
+			DocumentID: toPush.URL,
+			Fields:     structs.Map(toPush),
+		}
+
+		// Pushing the repositories with the pushapi
+		if _, err = r.pushClient.PushDocument(doc, r.sourceID); err != nil {
+			Error.Fatal(err)
+		}
+	}
+
+	if r.debug {
+		Info.Println("Done pushing pull requests")
 	}
 }

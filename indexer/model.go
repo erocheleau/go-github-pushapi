@@ -47,6 +47,33 @@ type Repository struct {
 	FileType       string  `json:"filetype"`
 }
 
+type PullRequest struct {
+	ID           int    `json:"id,omitempty"`
+	Number       int    `json:"number,omitempty"`
+	State        string `json:"state,omitempty"`
+	Title        string `json:"title,omitempty"`
+	Body         string `json:"body,omitempty"`
+	CreatedAt    string `json:"created_at,omitempty"`
+	UpdatedAt    string `json:"updated_at,omitempty"`
+	ClosedAt     string `json:"closed_at,omitempty"`
+	MergedAt     string `json:"merged_at,omitempty"`
+	Merged       bool   `json:"merged,omitempty"`
+	Mergeable    bool   `json:"mergeable,omitempty"`
+	Comments     int    `json:"comments,omitempty"`
+	Commits      int    `json:"commits,omitempty"`
+	Additions    int    `json:"additions,omitempty"`
+	Deletions    int    `json:"deletions,omitempty"`
+	ChangedFiles int    `json:"changed_files,omitempty"`
+	URL          string `json:"url,omitempty"`
+	HTMLURL      string `json:"html_url,omitempty"`
+	IssueURL     string `json:"issue_url,omitempty"`
+	StatusesURL  string `json:"statuses_url,omitempty"`
+	DiffURL      string `json:"diff_url,omitempty"`
+	PatchURL     string `json:"patch_url,omitempty"`
+	Data         string `json:"data"`
+	FileType     string `json:"filetype"`
+}
+
 type Owner struct {
 	Login     string  `json:"login"`
 	ID        float64 `json:"id"`

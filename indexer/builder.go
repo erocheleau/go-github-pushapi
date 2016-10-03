@@ -45,3 +45,21 @@ func BuildRepositoryObject(toBuild *github.Repository) (*Repository, error) {
 
 	return toPush, nil
 }
+
+// BuildRepositoryObject builds a Repository object ready to be pushed to Coveo
+func BuildPRObject(toBuild *github.PullRequest) (*PullRequest, error) {
+	marsh, err := json.Marshal(toBuild)
+	if err != nil {
+		return nil, err
+	}
+
+	toPush := &PullRequest{}
+	if err := json.Unmarshal(marsh, toPush); err != nil {
+		return nil, err
+	}
+
+	toPush.Data = toPush.Title
+	toPush.FileType = "Pull Request"
+
+	return toPush, nil
+}
