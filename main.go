@@ -34,4 +34,6 @@ func main() {
 
 	indexer.IndexOrganizationByName("Coveo")
 	indexer.IndexRepositoriesByOrgAsync("Coveo")
+
+	indexer.IndexRepositoryByName("erocheleau", "temperature-control-api")
 }

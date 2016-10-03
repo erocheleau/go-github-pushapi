@@ -99,6 +99,23 @@ func (r *reposIndexer) pushOrganization(org *github.Organization) {
 /////////////// REPOSITORIES //////////////////
 ///////////////////////////////////////////////
 
+// IndexRepositoryByNameAsync will index a single repository from a owner.
+func (r *reposIndexer) IndexRepositoryByNameAsync(owner, name string) {
+	repos := []*github.Repository{}
+	repo, _, err := r.ghclient.Repositories.Get(owner, name)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	if r.debug {
+		Info.Println("Indexing repository ", owner, "/", name)
+	}
+
+	repos[0] = repo
+
+	r.pushRepositories(repos)
+}
+
 // IndexRepositoriesByOrgAsync will index all the repositories from a specific
 // orgname and will index them in a push source
 // @param orgname The name of the organization to index the repositories of.

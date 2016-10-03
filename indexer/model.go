@@ -23,7 +23,7 @@ type Organization struct {
 }
 
 type Repository struct {
-	ID             float64 `json:"id"`
+	ID             int     `json:"id"`
 	Name           string  `json:"name"`
 	FullName       string  `json:"full_name"`
 	Description    string  `json:"description"`
