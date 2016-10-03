@@ -14,6 +14,7 @@ import (
 // ReposIndexer interface to index github objects. @see NewReposIndexer for config
 type ReposIndexer interface {
 	IndexOrganizationByName(orgname string)
+	IndexRepositoryByName(owner, name string)
 	IndexRepositoriesByOrgAsync(orgname string)
 	pushRepositories([]*github.Repository)
 }
